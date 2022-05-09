@@ -48,6 +48,6 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    version='version.rc',
+    version='metadata.rc',
     icon = 'res/icon.ico',
 )
