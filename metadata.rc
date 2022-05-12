@@ -6,14 +6,14 @@ VSVersionInfo(
   ffi=FixedFileInfo(
 # filevers and prodvers should be always a tuple with four items: (1, 2, 3, 4)
 # Set not needed items to zero 0.
-filevers=(1, 0, 1, 0),
-prodvers=(1, 0, 1, 0),
+filevers=(1, 0, 2, 0),
+prodvers=(1, 0, 2, 0),
 # Contains a bitmask that specifies the valid bits 'flags'r
 mask=0x3f,
 # Contains a bitmask that specifies the Boolean attributes of the file.
 flags=0x0,
 # The operating system for which this file was designed.
-# 0x4 - NT and there is no need to change it.
+# 0x40004 - NT and there is no need to change it.
 OS=0x40004,
 # The general type of file.
 # 0x1 - the file is an application.
@@ -30,13 +30,13 @@ StringFileInfo(
   StringTable(
     u'040904B0',
     [StringStruct(u'CompanyName', 'Ip3rFra'),
-    StringStruct(u'FileDescription', 'EDICO Updater'),
-    StringStruct(u'FileVersion', '1.0.1'),
-    StringStruct(u'InternalName', 'EDICOUpdater'),
+    StringStruct(u'FileDescription', 'Edico Updater'),
+    StringStruct(u'FileVersion', '1.0.2'),
+    StringStruct(u'InternalName', 'EdicoUpdater'),
     StringStruct(u'LegalCopyright', 'Copyright \xA9 2022 Ip3rFra'),
     StringStruct(u'OriginalFilename', ''),
-    StringStruct(u'ProductName', 'EDICO Updater'),
-    StringStruct(u'ProductVersion', '1.0.1')])
+    StringStruct(u'ProductName', 'Edico Updater'),
+    StringStruct(u'ProductVersion', '1.0.2')])
   ]), 
 VarFileInfo([VarStruct(u'Translation', [1040, 1200])])
   ]

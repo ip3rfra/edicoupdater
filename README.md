@@ -1,6 +1,6 @@
-# EDICO Updater
-GUI per l'aggiornamento automatico di EDICO (versione italiana).  
+# Edico Updater
+GUI per l'aggiornamento automatico di Edico (versione italiana).  
   
 
-EDICO è di proprietà di ONCE CTI.  
+Edico è di proprietà di ONCE CTI.  
 Questo software non è affiliato in alcun modo a ONCE.
