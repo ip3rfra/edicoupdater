@@ -1,15 +1,20 @@
 # -*- mode: python ; coding: utf-8 -*-
 import datetime
+import PyInstaller.config
 
 block_cipher = None
 
 
-bd = datetime.datetime.now().isoformat()
+bd = datetime.datetime.now()
+bdiso = bd.isoformat()
+bddir = bd.strftime("%m-%d-%Y_%H%M%S")
+
+PyInstaller.config.CONF['distpath'] = f"./dist/{bddir}"
 
 # Write version info into _constants.py resource file
 with open("src/_constants.py", 'w') as f:
     f.write('author = "Ip3rFra"\n')
-    f.write(f'buildDate = "{bd}"')
+    f.write(f'buildDate = "{bdiso}"')
     
 a = Analysis(
     ['src/main.py', 'src/strings.py', 'src/_constants.py'],
