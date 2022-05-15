@@ -21,6 +21,7 @@ frame.Center()
 panel = wx.Panel(frame, wx.ID_ANY)
 panel.SetSize(frame.GetSize())
 
+
 # error dialog
 def showError(error):
     wx.MessageBox(
@@ -98,7 +99,7 @@ def getVersionFromJSON():
 # compare the versions
 def compareVersions():
     version2 = getVersionFromExecutable()
-    if version2 == None:
+    if version2 is None:
         return 2
     version1 = getVersionFromJSON()
     if version1 > version2:
