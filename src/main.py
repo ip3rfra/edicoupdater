@@ -1,5 +1,6 @@
 from os import environ, path, startfile
-import requests as r
+from queue import Queue
+import requests
 import strings
 import sys
 from threading import Thread
@@ -7,6 +8,8 @@ from win32com.client import Dispatch
 import wx
 
 resourcePath = sys._MEIPASS
+
+q = Queue()
 
 # initialize wx
 app = wx.App()
@@ -35,7 +38,7 @@ def showError(error):
 def getJSON():
     JSONURL = "https://raw.githubusercontent.com/edicoIta/remoteConfig/main/edico.json"
     try:
-        response = r.get(JSONURL, timeout=5)
+        response = requests.get(JSONURL, timeout=5)
         if response.status_code == 200:
             return response.json()
         else:
@@ -45,7 +48,7 @@ def getJSON():
                 )
             )
             return None
-    except r.exceptions.RequestException:
+    except requests.exceptions.RequestException:
         showError(strings.serverUnreachable)
         return None
 
@@ -62,13 +65,18 @@ def downloadFile():
     url = getURLFromJSON()
     path = f"EdicoSetup-v{getVersionFromJSON()}.exe"
     try:
-        response = r.get(url, stream=True, timeout=5)
-        with open(path, "wb") as f:
-            for chunk in response.iter_content(chunk_size=1024):
-                if chunk:
-                    f.write(chunk)
-        return True, path
-    except r.exceptions.RequestException:
+        with requests.get(url, stream=True, timeout=5) as r:
+            totalSize = int(r.headers.get("content-length", 0))
+            chunkSize = 1024
+            with open(path, "wb") as f:
+                for i, chunk in enumerate(r.iter_content(chunk_size=chunkSize)):
+                    progress = int(i * chunkSize / totalSize * 100)
+                    # write the percentage
+                    q.put(progress)
+                    if chunk:
+                        f.write(chunk)
+            return True, path
+    except requests.exceptions.RequestException:
         showError(strings.serverUnreachable)
         return False, None
 
@@ -105,7 +113,7 @@ def compareVersions():
     if version1 > version2:
         return 1
     elif version1 == version2:
-        return 0
+        return 1
     else:
         return -1
 
@@ -113,9 +121,9 @@ def compareVersions():
 # check if the internet connection is available before starting the download
 def checkInternet():
     try:
-        r.get("https://www.google.com", timeout=5)
+        requests.get("https://www.google.com", timeout=5)
         return True
-    except r.exceptions.RequestException:
+    except requests.exceptions.RequestException:
         showError(strings.serverUnreachable)
         return False
 
@@ -170,9 +178,9 @@ def processVersion(event):
             t = Thread(target=downloadAndInstall, daemon=True)
             t.start()
             progress = spawnProgressDialog()
+            progress.Show()
             while t.is_alive():
-                progress.Pulse()
-                progress.Show()
+                progress.Update(q.get())
             progress.Destroy()
     elif compareVersions() == 2:
         # ask the user if he wants to download the latest version
@@ -188,9 +196,9 @@ def processVersion(event):
                 t = Thread(target=downloadAndInstall, daemon=True)
                 t.start()
                 progress = spawnProgressDialog()
+                progress.Show()
                 while t.is_alive():
-                    progress.Pulse()
-                    progress.Show()
+                    progress.Update(q.get())
                 progress.Destroy()
     elif compareVersions() == -1:
         showError(strings.versionError)
@@ -203,7 +211,7 @@ def spawnProgressDialog():
         strings.progressDialogText,
         maximum=100,
         parent=frame,
-        style=wx.PD_APP_MODAL | wx.PD_AUTO_HIDE | wx.PD_ELAPSED_TIME,
+        style=wx.PD_APP_MODAL | wx.PD_AUTO_HIDE | wx.PD_CAN_ABORT | wx.PD_SMOOTH,
     )
 
 
